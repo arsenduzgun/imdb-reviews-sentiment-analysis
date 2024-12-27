@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDb Sentiment Analysis</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+            height: 100vh;
+            width: 100vw;
+        }
+        .container {
+            background-color: white;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 60vw; /* Reduce the width of the container */
+            max-width: 900px; /* Ensure it doesn't grow too large */
+            box-sizing: border-box;
+            overflow: auto;
+            min-height: 600px; /* Ensure constant height */
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        p {
+            color: #555;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        textarea {
+            margin: 10px auto;
+            display: block;
+            width: 50%;
+            min-height: 150px;
+            resize: vertical;
+            font-size: 16px;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: block;
+            margin: 30px auto;
+            width: 10%;
+            background-color: #939393;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input:hover {
+            background-color: #a9a9a9;
+        }
+        .result {
+            height: 20px; /* Reserve height for result content */
+            text-align: center;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the text if present */
+        }
+        .intro {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .intro img {
+            margin: 30px auto;
+            display: block;
+            max-width: 40%;
+        }
+    </style>    
+</head>
+<body>
+    <div class="container">
+        <h1>IMDb Sentiment Analysis Model</h1>
+        <div class="intro">
+            <img src="{{ url_for('static', filename='imdb.png') }}" alt="IMDb image">    
+            <p>This model predicts the sentiment of IMDb reviews by providing a sentiment score ranging from 0 to 100. A higher score indicates a more positive review, with 100 representing the most positive sentiment.</p>
+            <p>Please input a review to receive an AI-generated sentiment score.</p>
+        </div>
+
+        <form id="upload-form" action="/predict" method="post">
+            <!-- Textarea Input Field -->
+            <textarea 
+                name="text" 
+                placeholder="Enter your review here..." 
+                required></textarea>
+            
+            <!-- Submit Button -->
+            <input 
+                type="submit" 
+                value="Predict">
+        </form>
+
+        <div class="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const result = document.querySelector('.result');
+    
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+
+            const formData = new FormData(form);
+    
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.prediction) {
+                    result.innerHTML = `<strong>Positivity score:&nbsp</strong> ${data.prediction}`;
+                } else {
+                    result.innerHTML = `<strong>Error:&nbsp</strong> No prediction received.`;
+                }
+            })
+            .catch(error => {
+                result.innerHTML = `<strong>Error:&nbsp</strong> Failed to fetch prediction. Check your network and try again.`;
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

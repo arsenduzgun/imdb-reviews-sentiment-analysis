@@ -33,14 +33,14 @@ The model was developed using a Bidirectional LSTM network. Key features include
 
 The model's performance was evaluated using accuracy and loss metrics on the training and validation datasets. Below are the training and validation curves:
 
-![Training and Validation Metrics](train_val.png)
+![Training and Validation Metrics](./readme-images/train_val.png)
 
 - **Accuracy**: The model steadily improved during training, achieving high accuracy on both the training and validation sets.
 - **Loss**: Training and validation loss decreased over epochs, indicating effective learning.
 
 The confusion matrix illustrates the model's performance on the test set:
 
-![Confusion Matrix](matrix.png)
+![Confusion Matrix](./readme-images/matrix.png)
 
 ## 4. Web Application
 
@@ -49,7 +49,7 @@ The trained model was deployed using Flask, providing a simple and intuitive int
 - **Input**: Users enter a review in the text box.
 - **Output**: The predicted sentiment score is displayed on the page.
 
-![Web Interface Screenshot](ui.png)
+![Web Interface Screenshot](./readme-images/ui.png)
 
 ## 5. Challenges and Future Work
 

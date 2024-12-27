@@ -2,68 +2,84 @@
 
 ## 1. Introduction
 
-This project involves developing a sentiment analysis system for IMDb movie reviews. Using a custom-trained deep learning model, the application predicts whether a review is positive or negative. A Flask-based web interface provides real-time predictions based on user input.
+This project involves developing a sentiment analysis system for IMDb movie reviews. Using a custom-trained deep learning model, the application provides a positivity score ranging from 0 to 100, where 100 indicates the most positive sentiment. A Flask-based web interface allows users to input reviews and receive predictions in real-time.
 
 ## 2. Dataset and Preprocessing
 
-The dataset consists of IMDb movie reviews, evenly balanced between positive and negative sentiments. The data preprocessing pipeline includes:
+The dataset consists of IMDb movie reviews, evenly balanced between positive and negative sentiments. A detailed preprocessing pipeline was applied to prepare the data for modeling:
 
-- Removing duplicates and cleaning text.
-- Lowercasing, tokenizing, and lemmatizing words.
-- Removing stopwords and correcting spelling errors using SymSpell.
-- Encoding sentiments as binary classes: `1` for positive and `0` for negative.
+### Preprocessing Steps
 
-The dataset was split into training, validation, and test sets for model development and evaluation.
+1. **Lowercase Text**: All text was converted to lowercase for consistency.
+2. **Expand Contractions**: Common contractions (e.g., "don't") were expanded into their full forms (e.g., "do not") using the `contractions` library.
+3. **Remove Non-Alphabetic Characters**: Special characters, numbers, and symbols were removed to retain only textual information.
+4. **Spelling Correction**: The SymSpell library was used to correct misspelled words, referencing a frequency-based dictionary.
+5. **Remove Stopwords**: Commonly used words with little semantic meaning (e.g., "the," "is") were removed, except for custom stopwords that carry sentiment (e.g., "not," "but").
+6. **Lemmatize Tokens**: Each word was reduced to its base form (e.g., "running" → "run") using WordNet and part-of-speech tagging.
+7. **Remove Invalid Words**: Tokens not found in the English lexicon were discarded.
+
+After preprocessing, sentiments were encoded as binary classes: `1` for positive and `0` for negative. The dataset was split into training, validation, and test sets for model development and evaluation.
 
 ## 3. Model Development
 
-The model was developed using a Bidirectional LSTM network. Key features include:
+The model was developed using a Bidirectional LSTM network to capture both forward and backward contextual dependencies in the reviews.
 
-- **GloVe Embeddings**: Pre-trained word vectors for semantic representation.
-- **Bidirectional LSTM**: Captures contextual dependencies in text.
-- **Dropout Layers**: Reduces overfitting.
-- **Binary Classification**: Outputs a sentiment score via a sigmoid activation.
+### Key Features of the Model
+
+- **GloVe Embeddings**: Pre-trained word vectors were used to represent tokens as dense numerical arrays, encoding semantic relationships.
+- **Bidirectional LSTM**: A recurrent neural network architecture that processes sequences in both directions to enhance context comprehension.
+- **Dropout Layers**: Introduced to mitigate overfitting during training.
+- **Sigmoid Activation**: Outputs a single value representing the positivity score.
 
 ### Training Process
 
-- The model was trained using padded input sequences, with early stopping applied to optimize performance.
-- The final model was saved as `model.pkl`.
+- **Input Preparation**: Preprocessed text was tokenized and padded to a uniform sequence length of 100 tokens.
+- **Optimization**: The Adam optimizer was used, and binary cross-entropy was selected as the loss function.
+- **Early Stopping**: Training was stopped when the validation loss no longer improved, preventing overfitting.
+- **Output**: The trained model was saved as `model.pkl`.
 
 ### Performance Metrics
 
-The model's performance was evaluated using accuracy and loss metrics on the training and validation datasets. Below are the training and validation curves:
+The model's performance was evaluated using training and validation accuracy and loss:
 
 ![Training and Validation Metrics](./readme-images/train_val.png)
 
-- **Accuracy**: The model steadily improved during training, achieving high accuracy on both the training and validation sets.
-- **Loss**: Training and validation loss decreased over epochs, indicating effective learning.
+- **Accuracy**: The model demonstrated steady improvement, achieving high accuracy on both training and validation datasets.
+- **Loss**: Both training and validation loss decreased over time, indicating effective learning.
 
-The confusion matrix illustrates the model's performance on the test set:
+The confusion matrix below shows the model's predictions on the test set:
 
 ![Confusion Matrix](./readme-images/matrix.png)
 
 ## 4. Web Application
 
-The trained model was deployed using Flask, providing a simple and intuitive interface:
+The trained model was integrated into a Flask web application to provide an interactive interface for sentiment analysis.
 
-- **Input**: Users enter a review in the text box.
-- **Output**: The predicted sentiment score is displayed on the page.
+### Application Features
+
+- **Input**: Users can submit a review via a text box.
+- **Output**: The model predicts the positivity score, which is displayed on the page.
 
 ![Web Interface Screenshot](./readme-images/ui.png)
+
+### Backend Functionality
+
+- **Text Processing**: Input reviews are preprocessed in real-time using the same steps applied during training.
+- **Prediction**: The processed text is passed to the model, which outputs a positivity score.
 
 ## 5. Challenges and Future Work
 
 ### Challenges
 
-- **Spelling and Grammar Variations**: Handling diverse text patterns remains a challenge.
-- **Complex Sentiments**: Understanding nuanced sentiments, such as sarcasm, is a limitation.
+- **Spelling and Grammar Variations**: Diverse text patterns, such as spelling errors and slang, can affect preprocessing and model predictions.
+- **Complex Sentiments**: Understanding nuanced expressions like sarcasm remains challenging.
 
 ### Future Work
 
-- Incorporate transformer models like BERT for improved contextual understanding.
-- Extend the application to support multiple languages.
-- Deploy the application on cloud platforms for scalability.
+- **Contextual Models**: Experiment with transformer-based architectures like BERT to improve understanding of nuanced sentiments.
+- **Multi-Language Support**: Extend the system to analyze reviews in languages other than English.
+- **Cloud Deployment**: Host the application on cloud platforms to ensure scalability and wider accessibility.
 
 ## 6. Conclusion
 
-This project combines data preprocessing, a custom-trained deep learning model, and a web application to deliver accurate sentiment predictions. The results demonstrate the effectiveness of the approach, with room for future enhancements.
+This project demonstrates a robust sentiment analysis system that combines advanced text preprocessing, a custom-trained deep learning model, and an intuitive web interface. By providing a positivity score for reviews, the system offers a practical solution for sentiment analysis. With future enhancements, it can become even more versatile and accessible.

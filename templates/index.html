@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IMDb Sentiment Analysis</title>
 
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
+        /* Reset styles for consistent appearance */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
+            font-family: 'Poppins', sans-serif;
         }
+
         body {
             display: flex;
             justify-content: center;
@@ -21,28 +26,33 @@
             height: 100vh;
             width: 100vw;
         }
+
         .container {
             background-color: white;
             padding: 20px 40px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 60vw; /* Reduce the width of the container */
-            max-width: 900px; /* Ensure it doesn't grow too large */
+            width: 60vw;
+            max-width: 900px;
             box-sizing: border-box;
             overflow: auto;
-            min-height: 600px; /* Ensure constant height */
+            min-height: 600px;
         }
+
         h1 {
             color: #333;
             font-size: 24px;
             margin: 30px 0;
             text-align: center;
         }
+
         p {
             color: #555;
             font-size: 16px;
             margin: 10px 0;
+            line-height: 1.5;
         }
+
         textarea {
             margin: 10px auto;
             display: block;
@@ -52,8 +62,17 @@
             font-size: 16px;
             box-sizing: border-box;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        input {
+
+        textarea:focus {
+            outline: none;
+            border-color: #939393;
+            box-shadow: 0 0 4px rgba(147, 147, 147, 0.5);
+        }
+
+        input[type="submit"] {
             padding: 10px;
             border-radius: 5px;
             font-size: 16px;
@@ -66,82 +85,91 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        input:hover {
+
+        input[type="submit"]:hover {
             background-color: #a9a9a9;
         }
+
         .result {
-            height: 20px; /* Reserve height for result content */
+            height: 20px;
             text-align: center;
             margin: 20px 0;
             display: flex;
             align-items: center;
-            justify-content: center; /* Center the text if present */
+            justify-content: center;
         }
+
         .intro {
             margin-bottom: 30px;
             text-align: left;
         }
+
         .intro img {
             margin: 30px auto;
             display: block;
             max-width: 40%;
         }
-    </style>    
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>IMDb Sentiment Analysis Model</h1>
+        
         <div class="intro">
-            <img src="{{ url_for('static', filename='imdb.png') }}" alt="IMDb image">    
+            <img src="{{ url_for('static', filename='imdb.png') }}" alt="IMDb logo">
             <p>This model predicts the sentiment of IMDb reviews by providing a sentiment score ranging from 0 to 100. A higher score indicates a more positive review, with 100 representing the most positive sentiment.</p>
-            <p>Please input a review to receive an AI-generated sentiment score.</p>
+            <p>Please input a review below to receive an AI-generated sentiment score.</p>
         </div>
 
+        <!-- Form for submitting text input -->
         <form id="upload-form" action="/predict" method="post">
-            <!-- Textarea Input Field -->
             <textarea 
                 name="text" 
                 placeholder="Enter your review here..." 
                 required></textarea>
-            
-            <!-- Submit Button -->
+
             <input 
                 type="submit" 
                 value="Predict">
         </form>
 
+        <!-- Div to display the result dynamically -->
         <div class="result"></div>
     </div>
 
     <script>
+        // Select form and result container
         const form = document.getElementById('upload-form');
         const result = document.querySelector('.result');
-    
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-    
 
+        // Add event listener to handle form submission
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Fetch form data
             const formData = new FormData(form);
-    
-            fetch('/predict', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
 
+            try {
+                // Make POST request to server
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Parse response as JSON
+                const data = await response.json();
+
+                // Update result container with prediction or error message
                 if (data.prediction) {
-                    result.innerHTML = `<strong>Positivity score:&nbsp</strong> ${data.prediction}`;
+                    result.innerHTML = `<strong>Positivity score:</strong> ${data.prediction}`;
                 } else {
-                    result.innerHTML = `<strong>Error:&nbsp</strong> No prediction received.`;
+                    result.innerHTML = `<strong>Error:</strong> No prediction received.`;
                 }
-            })
-            .catch(error => {
-                result.innerHTML = `<strong>Error:&nbsp</strong> Failed to fetch prediction. Check your network and try again.`;
-            });
+            } catch (error) {
+                // Display error message if fetch fails
+                result.innerHTML = `<strong>Error:</strong> Failed to fetch prediction. Please try again.`;
+            }
         });
     </script>
-    
-    
 </body>
 </html>
